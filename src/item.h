@@ -28,6 +28,7 @@
 #define GLOWSTONE 24
 #define TNT 25
 #define TORCH 26
+#define BLUE_TORCH 27
 #define COLOR_00 32
 #define COLOR_01 33
 #define COLOR_02 34
@@ -76,5 +77,8 @@ int is_light(int w);
 
 /* Returns the blast radius if the specified item is explosive, or zero otherwise. */
 int is_explosive(int w);
+
+/* Indicates whether the specified item is affected by gravity (falls if unsupported). */
+int is_gravity_affected(int w);
 
 #endif

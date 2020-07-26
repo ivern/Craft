@@ -28,6 +28,7 @@ const int items[] = {
     GLOWSTONE,
     TNT,
     TORCH,
+    BLUE_TORCH,
     COLOR_00,
     COLOR_01,
     COLOR_02,
@@ -93,7 +94,7 @@ const int blocks[256][6] = {
     {55, 55, 55, 55, 55, 55}, // 24 - glowstone
     {56, 56, 104, 88, 72, 72}, // 25 - tnt
     {0, 0, 0, 0, 0, 0}, // 26 - torch
-    {0, 0, 0, 0, 0, 0}, // 27
+    {0, 0, 0, 0, 0, 0}, // 27 - blue torch
     {0, 0, 0, 0, 0, 0}, // 28
     {0, 0, 0, 0, 0, 0}, // 29
     {0, 0, 0, 0, 0, 0}, // 30
@@ -144,6 +145,7 @@ const int plants[256] = {
     54, // 23 - blue flower
     0, 0, // 24 - 25
     57, // 26 - torch
+    73, // 27 - blue torch
 };
 
 int is_plant(int w) {
@@ -155,7 +157,9 @@ int is_plant(int w) {
         case SUN_FLOWER:
         case WHITE_FLOWER:
         case BLUE_FLOWER:
-        case TORCH: // TODO hacky way to render torches, fix it nicely
+        // TODO hacky way to render torches, fix it nicely
+        case TORCH:
+        case BLUE_TORCH:
             return 1;
         default:
             return 0;
@@ -208,6 +212,7 @@ int is_light(int w) {
     switch (w) {
         case GLOWSTONE:
         case TORCH:
+        case BLUE_TORCH:
             return 1;
         default:
             return 0;
@@ -218,6 +223,15 @@ int is_explosive(int w) {
     switch (w) {
         case TNT:
             return 5;
+        default:
+            return 0;
+    }
+}
+
+int is_gravity_affected(int w) {
+    switch (w) {
+        case SAND:
+            return 1;
         default:
             return 0;
     }
