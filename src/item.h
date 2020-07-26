@@ -27,6 +27,7 @@
 #define BLUE_FLOWER 23
 #define GLOWSTONE 24
 #define TNT 25
+#define TORCH 26
 #define COLOR_00 32
 #define COLOR_01 33
 #define COLOR_02 34
@@ -69,7 +70,11 @@ int is_plant(int w);
 int is_obstacle(int w);
 int is_transparent(int w);
 int is_destructable(int w);
+
+/* Indicates whether the specified item is a light source by default. */
 int is_light(int w);
+
+/* Returns the blast radius if the specified item is explosive, or zero otherwise. */
 int is_explosive(int w);
 
 #endif

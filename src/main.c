@@ -2137,9 +2137,6 @@ void on_light() {
     }
 }
 
-// TODO make this configurable
-#define BLAST_RADIUS 5
-
 double distance(int x1, int y1, int z1, int x2, int y2, int z2) {
     int dx = x1 - x2;
     int dy = y1 - y2;
@@ -2151,22 +2148,23 @@ void destroy_block(int x, int y, int z, int w) {
     if (y > 0 && y < 256 && is_destructable(w)) {
         set_block(x, y, z, 0);
         record_block(x, y, z, 0);
+
         if (is_plant(get_block(x, y + 1, z))) {
             set_block(x, y + 1, z, 0);
         }
-        if (is_explosive(w)) {
-            for (int dx = -BLAST_RADIUS; dx <= BLAST_RADIUS; ++dx) {
+
+        int blast_radius = is_explosive(w);
+        if (blast_radius) {
+            for (int dx = -blast_radius; dx <= blast_radius; ++dx) {
                 int hx = x + dx;
-                for (int dy = -BLAST_RADIUS; dy <= BLAST_RADIUS; ++dy) {
+                for (int dy = -blast_radius; dy <= blast_radius; ++dy) {
                     int hy = y + dy;
-                    for (int dz = -BLAST_RADIUS; dz <= BLAST_RADIUS; ++dz) {
-                        // TODO more efficient propagation, no need to look where we already did
-                        if (dx != 0 || dy != 0 || dz != 0) {
-                            int hz = z + dz;
-                            if (floor(distance(x, y, z, hx, hy, hz)) <= BLAST_RADIUS) {
-                                int hw = get_block(hx, hy, hz);
-                                destroy_block(hx, hy, hz, hw);
-                            }
+                    for (int dz = -blast_radius; dz <= blast_radius; ++dz) {
+                        int hz = z + dz;
+
+                        if (floor(distance(x, y, z, hx, hy, hz)) <= blast_radius) {
+                            int hw = get_block(hx, hy, hz);
+                            destroy_block(hx, hy, hz, hw);
                         }
                     }
                 }
