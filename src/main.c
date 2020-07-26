@@ -2137,17 +2137,49 @@ void on_light() {
     }
 }
 
+// TODO make this configurable
+#define BLAST_RADIUS 5
+
+double distance(int x1, int y1, int z1, int x2, int y2, int z2) {
+    int dx = x1 - x2;
+    int dy = y1 - y2;
+    int dz = z1 - z2;
+    return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+void destroy_block(int x, int y, int z, int w) {
+    if (y > 0 && y < 256 && is_destructable(w)) {
+        set_block(x, y, z, 0);
+        record_block(x, y, z, 0);
+        if (is_plant(get_block(x, y + 1, z))) {
+            set_block(x, y + 1, z, 0);
+        }
+        if (is_explosive(w)) {
+            for (int dx = -BLAST_RADIUS; dx <= BLAST_RADIUS; ++dx) {
+                int hx = x + dx;
+                for (int dy = -BLAST_RADIUS; dy <= BLAST_RADIUS; ++dy) {
+                    int hy = y + dy;
+                    for (int dz = -BLAST_RADIUS; dz <= BLAST_RADIUS; ++dz) {
+                        // TODO more efficient propagation, no need to look where we already did
+                        if (dx != 0 || dy != 0 || dz != 0) {
+                            int hz = z + dz;
+                            if (floor(distance(x, y, z, hx, hy, hz)) <= BLAST_RADIUS) {
+                                int hw = get_block(hx, hy, hz);
+                                destroy_block(hx, hy, hz, hw);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 void on_left_click() {
     State *s = &g->players->state;
     int hx, hy, hz;
     int hw = hit_test(0, s->x, s->y, s->z, s->rx, s->ry, &hx, &hy, &hz);
-    if (hy > 0 && hy < 256 && is_destructable(hw)) {
-        set_block(hx, hy, hz, 0);
-        record_block(hx, hy, hz, 0);
-        if (is_plant(get_block(hx, hy + 1, hz))) {
-            set_block(hx, hy + 1, hz, 0);
-        }
-    }
+    destroy_block(hx, hy, hz, hw);
 }
 
 void on_right_click() {
@@ -2158,6 +2190,9 @@ void on_right_click() {
         if (!player_intersects_block(2, s->x, s->y, s->z, hx, hy, hz)) {
             set_block(hx, hy, hz, items[g->item_index]);
             record_block(hx, hy, hz, items[g->item_index]);
+            if (is_light(items[g->item_index])) {
+                toggle_light(hx, hy, hz);
+            }
         }
     }
 }

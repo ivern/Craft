@@ -1,4 +1,6 @@
+.idea
 .DS_Store
+deps
 Makefile
 CMakeCache.txt
 CMakeFiles
@@ -7,10 +9,11 @@ config.py
 craft
 world
 env
+venv
 log.txt
 *.o
 *.db
 *.exe
 *.dll
 *.pyc
-
+*.cbp

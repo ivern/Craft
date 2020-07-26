@@ -25,6 +25,8 @@ const int items[] = {
     SUN_FLOWER,
     WHITE_FLOWER,
     BLUE_FLOWER,
+    GLOWSTONE,
+    TNT,
     COLOR_00,
     COLOR_01,
     COLOR_02,
@@ -87,8 +89,8 @@ const int blocks[256][6] = {
     {0, 0, 0, 0, 0, 0}, // 21
     {0, 0, 0, 0, 0, 0}, // 22
     {0, 0, 0, 0, 0, 0}, // 23
-    {0, 0, 0, 0, 0, 0}, // 24
-    {0, 0, 0, 0, 0, 0}, // 25
+    {55, 55, 55, 55, 55, 55}, // 24 - glowstone
+    {56, 56, 104, 88, 72, 72}, // 25 - tnt
     {0, 0, 0, 0, 0, 0}, // 26
     {0, 0, 0, 0, 0, 0}, // 27
     {0, 0, 0, 0, 0, 0}, // 28
@@ -195,5 +197,23 @@ int is_destructable(int w) {
             return 0;
         default:
             return 1;
+    }
+}
+
+int is_light(int w) {
+    switch (w) {
+        case GLOWSTONE:
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+int is_explosive(int w) {
+    switch (w) {
+        case TNT:
+            return 1;
+        default:
+            return 0;
     }
 }
