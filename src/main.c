@@ -2144,6 +2144,21 @@ double distance(int x1, int y1, int z1, int x2, int y2, int z2) {
     return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
+// TODO pretty bad, improve this
+struct {
+    int x, y, z;
+} maybe_falling[1024];
+int maybe_falling_count;
+
+void maybe_drop(int x, int y, int z) {
+    if (is_gravity_affected(get_block(x, y, z))) {
+        maybe_falling[maybe_falling_count].x = x;
+        maybe_falling[maybe_falling_count].y = y;
+        maybe_falling[maybe_falling_count].z = z;
+        ++maybe_falling_count;
+    }
+}
+
 void destroy_block(int x, int y, int z, int w) {
     if (y > 0 && y < 256 && is_destructable(w)) {
         set_block(x, y, z, 0);
@@ -2165,6 +2180,7 @@ void destroy_block(int x, int y, int z, int w) {
                         if (floor(distance(x, y, z, hx, hy, hz)) <= blast_radius) {
                             int hw = get_block(hx, hy, hz);
                             destroy_block(hx, hy, hz, hw);
+                            maybe_drop(hx, hy + 1, hz);
                         }
                     }
                 }
@@ -2173,11 +2189,39 @@ void destroy_block(int x, int y, int z, int w) {
     }
 }
 
+void start_gravity() {
+    maybe_falling_count = 0;
+}
+
+void apply_gravity(int x, int y, int z) {
+    int w = get_block(x, y, z);
+    if (is_gravity_affected(w)) {
+        int y2 = y - 1;
+        while (y2 > 0 && get_block(x, y2, z) == EMPTY) {
+            --y2;
+        }
+        destroy_block(x, y, z, w);
+        set_block(x, y2 + 1, z, w);
+        record_block(x, y2 + 1, z, w);
+        maybe_drop(x, y + 1, z);
+    }
+}
+
+void process_gravity() {
+    for (int i = 0; i < maybe_falling_count; ++i) {
+        apply_gravity(maybe_falling[i].x, maybe_falling[i].y, maybe_falling[i].z);
+    }
+}
+
 void on_left_click() {
     State *s = &g->players->state;
     int hx, hy, hz;
     int hw = hit_test(0, s->x, s->y, s->z, s->rx, s->ry, &hx, &hy, &hz);
+
+    start_gravity();
     destroy_block(hx, hy, hz, hw);
+    maybe_drop(hx, hy + 1, hz);
+    process_gravity();
 }
 
 void on_right_click() {
@@ -2191,6 +2235,10 @@ void on_right_click() {
             if (is_light(items[g->item_index])) {
                 toggle_light(hx, hy, hz);
             }
+
+            start_gravity();
+            maybe_drop(hx, hy, hz);
+            process_gravity();
         }
     }
 }
