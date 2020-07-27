@@ -33,7 +33,7 @@
 #define GOLD_ORE 29
 #define EMERALD_ORE 30
 #define PRESENT 31
-#define COLOR_00 32
+#define CRAFTING_TABLE 32
 #define COLOR_01 33
 #define COLOR_02 34
 #define COLOR_03 35
