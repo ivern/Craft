@@ -19,6 +19,7 @@
 #include "tinycthread.h"
 #include "util.h"
 #include "world.h"
+#include "ring.h"
 
 #define MAX_CHUNKS 8192
 #define MAX_PLAYERS 128
@@ -155,6 +156,7 @@ typedef struct {
 
 static Model model;
 static Model *g = &model;
+static Ring maybe_falling;
 
 int chunked(float x) {
     return floorf(roundf(x) / CHUNK_SIZE);
@@ -2144,18 +2146,20 @@ double distance(int x1, int y1, int z1, int x2, int y2, int z2) {
     return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-// TODO pretty bad, improve this
-struct {
-    int x, y, z;
-} maybe_falling[1024];
-int maybe_falling_count;
+void gravity_start() {
+    ring_alloc(&maybe_falling, 1024);
+}
 
-void maybe_drop(int x, int y, int z) {
-    if (is_gravity_affected(get_block(x, y, z))) {
-        maybe_falling[maybe_falling_count].x = x;
-        maybe_falling[maybe_falling_count].y = y;
-        maybe_falling[maybe_falling_count].z = z;
-        ++maybe_falling_count;
+void gravity_stop() {
+    ring_free(&maybe_falling);
+}
+
+void gravity_queue(int x, int y, int z) {
+    int w = get_block(x, y, z);
+    if (is_gravity_affected(w)) {
+        int p = chunked(x);
+        int q = chunked(y);
+        ring_put_block(&maybe_falling, p, q, x, y, z, w);
     }
 }
 
@@ -2180,7 +2184,7 @@ void destroy_block(int x, int y, int z, int w) {
                         if (floor(distance(x, y, z, hx, hy, hz)) <= blast_radius) {
                             int hw = get_block(hx, hy, hz);
                             destroy_block(hx, hy, hz, hw);
-                            maybe_drop(hx, hy + 1, hz);
+                            gravity_queue(hx, hy + 1, hz);
                         }
                     }
                 }
@@ -2189,11 +2193,7 @@ void destroy_block(int x, int y, int z, int w) {
     }
 }
 
-void start_gravity() {
-    maybe_falling_count = 0;
-}
-
-void apply_gravity(int x, int y, int z) {
+void gravity_apply(int x, int y, int z) {
     int w = get_block(x, y, z);
     if (is_gravity_affected(w)) {
         int y2 = y - 1;
@@ -2203,13 +2203,16 @@ void apply_gravity(int x, int y, int z) {
         destroy_block(x, y, z, w);
         set_block(x, y2 + 1, z, w);
         record_block(x, y2 + 1, z, w);
-        maybe_drop(x, y + 1, z);
+        gravity_queue(x, y + 1, z);
     }
 }
 
-void process_gravity() {
-    for (int i = 0; i < maybe_falling_count; ++i) {
-        apply_gravity(maybe_falling[i].x, maybe_falling[i].y, maybe_falling[i].z);
+void gravity_flush() {
+    RingEntry entry;
+    while (ring_get(&maybe_falling, &entry)) {
+        if (entry.type == BLOCK) {
+            gravity_apply(entry.x, entry.y, entry.z);
+        }
     }
 }
 
@@ -2218,10 +2221,9 @@ void on_left_click() {
     int hx, hy, hz;
     int hw = hit_test(0, s->x, s->y, s->z, s->rx, s->ry, &hx, &hy, &hz);
 
-    start_gravity();
     destroy_block(hx, hy, hz, hw);
-    maybe_drop(hx, hy + 1, hz);
-    process_gravity();
+    gravity_queue(hx, hy + 1, hz);
+    gravity_flush();
 }
 
 void on_right_click() {
@@ -2236,9 +2238,8 @@ void on_right_click() {
                 toggle_light(hx, hy, hz);
             }
 
-            start_gravity();
-            maybe_drop(hx, hy, hz);
-            process_gravity();
+            gravity_queue(hx, hy, hz);
+            gravity_flush();
         }
     }
 }
@@ -2797,6 +2798,8 @@ int main(int argc, char **argv) {
     g->delete_radius = DELETE_CHUNK_RADIUS;
     g->sign_radius = RENDER_SIGN_RADIUS;
 
+    gravity_start();
+
     // INITIALIZE WORKER THREADS
     for (int i = 0; i < WORKERS; i++) {
         Worker *worker = g->workers + i;
@@ -3033,6 +3036,7 @@ int main(int argc, char **argv) {
         db_disable();
         client_stop();
         client_disable();
+        gravity_stop();
         del_buffer(sky_buffer);
         delete_all_chunks();
         delete_all_players();
