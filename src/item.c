@@ -8,7 +8,7 @@ const int items[] = {
     STONE,
     BRICK,
     WOOD,
-    CEMENT,
+    STONE,
     DIRT,
     PLANK,
     SNOW,
@@ -28,7 +28,7 @@ const int items[] = {
     GLOWSTONE,
     TNT,
     TORCH,
-    BLUE_TORCH,
+    SOUL_TORCH,
     DIAMOND_ORE,
     GOLD_ORE,
     EMERALD_ORE,
@@ -47,37 +47,37 @@ const int items[] = {
     GRANITE,
     ANDESITE,
     DIORITE,
-    COLOR_14,
-    COLOR_15,
-    COLOR_16,
-    COLOR_17,
-    COLOR_18,
-    COLOR_19,
-    COLOR_20,
-    COLOR_21,
-    COLOR_22,
-    COLOR_23,
-    COLOR_24,
-    COLOR_25,
-    COLOR_26,
-    COLOR_27,
-    COLOR_28,
-    COLOR_29,
-    COLOR_30,
-    COLOR_31
+    WITHERED_MAGMA,
+    MELON,
+    GRAVEL,
+    SNOW_BLOCK,
+    WITHER_ROSE,
+    CACTUS,
+    LIGHT_BROWN_TERRACOTTA,
+    ORANGE_TERRACOTTA,
+    GRAY_TERRACOTTA,
+    LIGHT_GRAY_TERRACOTTA,
+    RED_TERRACOTTA,
+    YELLOW_TERRACOTTA,
+    DEAD_BUSH,
+    BROWN_TERRACOTTA,
+    WITHERED_GRASS,
+    MYCELIUM,
+    RED_MUSHROOM,
+    GOLD_BLOCK
 };
 
 const int item_count = sizeof(items) / sizeof(int);
 
 const int blocks[256][6] = {
     // w => (left, right, top, bottom, front, back) tiles
-    {0, 0, 0, 0, 0, 0}, // 0 - empty
+    {2, 2, 2, 2, 2, 2}, // 0 - empty
     {16, 16, 32, 0, 16, 16}, // 1 - grass
     {1, 1, 1, 1, 1, 1}, // 2 - sand
     {2, 2, 2, 2, 2, 2}, // 3 - stone
     {3, 3, 3, 3, 3, 3}, // 4 - brick
     {20, 20, 36, 4, 20, 20}, // 5 - wood
-    {5, 5, 5, 5, 5, 5}, // 6 - cement
+    {5, 5, 5, 5, 5, 5}, // 6 - stone
     {6, 6, 6, 6, 6, 6}, // 7 - dirt
     {7, 7, 7, 7, 7, 7}, // 8 - plank
     {24, 24, 40, 8, 24, 24}, // 9 - snow
@@ -98,7 +98,7 @@ const int blocks[256][6] = {
     {55, 55, 55, 55, 55, 55}, // 24 - glowstone
     {56, 56, 104, 88, 72, 72}, // 25 - tnt
     {0, 0, 0, 0, 0, 0}, // 26 - torch
-    {0, 0, 0, 0, 0, 0}, // 27 - blue torch
+    {0, 0, 0, 0, 0, 0}, // 27 - soul torch
     {26, 26, 26, 26, 26, 26}, // 28 - diamond ore
     {27, 27, 27, 27, 27, 27}, // 29 - gold ore
     {28, 28, 28, 28, 28, 28}, // 30 - emerald ore
@@ -117,24 +117,24 @@ const int blocks[256][6] = {
     {78, 78, 78, 78, 78, 78}, // 43 - granite
     {79, 79, 79, 79, 79, 79}, // 44 - andesite
     {95, 95, 95, 95, 95, 95}, // 45 - diorite
-    {190, 190, 190, 190, 190, 190}, // 46 -
-    {191, 191, 191, 191, 191, 191}, // 47
-    {192, 192, 192, 192, 192, 192}, // 48
-    {193, 193, 193, 193, 193, 193}, // 49
-    {194, 194, 194, 194, 194, 194}, // 50
-    {195, 195, 195, 195, 195, 195}, // 51
-    {196, 196, 196, 196, 196, 196}, // 52
-    {197, 197, 197, 197, 197, 197}, // 53
-    {198, 198, 198, 198, 198, 198}, // 54
-    {199, 199, 199, 199, 199, 199}, // 55
-    {200, 200, 200, 200, 200, 200}, // 56
-    {201, 201, 201, 201, 201, 201}, // 57
-    {202, 202, 202, 202, 202, 202}, // 58
-    {203, 203, 203, 203, 203, 203}, // 59
-    {204, 204, 204, 204, 204, 204}, // 60
-    {205, 205, 205, 205, 205, 205}, // 61
-    {206, 206, 206, 206, 206, 206}, // 62
-    {207, 207, 207, 207, 207, 207}, // 63
+    {93, 93, 93, 93, 93, 93}, // 46 - withered magma
+    {94, 94, 110, 126, 94, 94}, // 47 - melon
+    {111, 111, 111, 111, 111, 111}, // 48 - gravel
+    {109, 109, 109, 109, 109, 109}, // 49 - snow block
+    {0, 0, 0, 0, 0, 0}, // 50 - wither rose
+    {127, 127, 143, 142, 127, 127}, // 51 - cactus
+    {91, 91, 91, 91, 91, 91}, // 52 - light brown terracotta
+    {90, 90, 90, 90, 90, 90}, // 53 - orange terracotta
+    {89, 89, 89, 89, 89, 89}, // 54 - gray terracotta
+    {105, 105, 105, 105, 105, 105}, // 55 - light gray terracotta
+    {106, 106, 106, 106, 106, 106}, // 56 - red terracotta
+    {107, 107, 107, 107, 107, 107}, // 57 - yellow terracotta
+    {0, 0, 0, 0, 0, 0}, // 58 - dead bush
+    {108, 108, 108, 108, 108, 108}, // 59 - brown terracotta
+    {87, 87, 103, 71, 87, 87}, // 60 - withered grass
+    {85, 85, 101, 69, 85, 85}, // 61 - mycelium
+    {0, 0, 0, 0, 0, 0}, // 62 - red mushroom
+    {124, 124, 124, 124, 124, 124}, // 63 - gold block
 };
 
 const int plants[256] = {
@@ -149,9 +149,15 @@ const int plants[256] = {
     54, // 23 - blue flower
     0, 0, // 24 - 25
     57, // 26 - torch
-    73, // 27 - blue torch
+    73, // 27 - soul torch
     0, 0, 0, 0, 0, // 28 - 32
     70, // 33 - flame flower
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 34 - 49
+    125, // 50 - wither rose
+    0, 0, 0, 0, 0, 0, 0, // 51 - 57
+    25, // 58 - dead bush
+    0, 0, 0, // 59 - 61
+    120 //62 - red mushroom
 };
 
 int is_plant(int w) {
@@ -164,9 +170,12 @@ int is_plant(int w) {
         case WHITE_FLOWER:
         case BLUE_FLOWER:
         case FLAME_FLOWER:
+        case WITHER_ROSE:
+        case DEAD_BUSH:
+        case RED_MUSHROOM:
         // TODO hacky way to render torches, fix it nicely
         case TORCH:
-        case BLUE_TORCH:
+        case SOUL_TORCH:
             return 1;
         default:
             return 0;
@@ -219,7 +228,7 @@ int is_light(int w) {
     switch (w) {
         case GLOWSTONE:
         case TORCH:
-        case BLUE_TORCH:
+        case SOUL_TORCH:
             return 1;
         default:
             return 0;
@@ -238,6 +247,8 @@ int is_explosive(int w) {
 int is_gravity_affected(int w) {
     switch (w) {
         case SAND:
+        case GRAVEL:
+        case SNOW_BLOCK:
             return 1;
         default:
             return 0;

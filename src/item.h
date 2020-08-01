@@ -7,7 +7,7 @@
 #define STONE 3
 #define BRICK 4
 #define WOOD 5
-#define CEMENT 6
+#define STONE 6
 #define DIRT 7
 #define PLANK 8
 #define SNOW 9
@@ -28,7 +28,7 @@
 #define GLOWSTONE 24
 #define TNT 25
 #define TORCH 26
-#define BLUE_TORCH 27
+#define SOUL_TORCH 27
 #define DIAMOND_ORE 28
 #define GOLD_ORE 29
 #define EMERALD_ORE 30
@@ -47,24 +47,24 @@
 #define GRANITE 43
 #define ANDESITE 44
 #define DIORITE 45
-#define COLOR_14 46
-#define COLOR_15 47
-#define COLOR_16 48
-#define COLOR_17 49
-#define COLOR_18 50
-#define COLOR_19 51
-#define COLOR_20 52
-#define COLOR_21 53
-#define COLOR_22 54
-#define COLOR_23 55
-#define COLOR_24 56
-#define COLOR_25 57
-#define COLOR_26 58
-#define COLOR_27 59
-#define COLOR_28 60
-#define COLOR_29 61
-#define COLOR_30 62
-#define COLOR_31 63
+#define WITHERED_MAGMA 46
+#define MELON 47
+#define GRAVEL 48
+#define SNOW_BLOCK 49
+#define WITHER_ROSE 50
+#define CACTUS 51
+#define LIGHT_BROWN_TERRACOTTA 52
+#define ORANGE_TERRACOTTA 53
+#define GRAY_TERRACOTTA 54
+#define LIGHT_GRAY_TERRACOTTA 55
+#define RED_TERRACOTTA 56
+#define YELLOW_TERRACOTTA 57
+#define DEAD_BUSH 58
+#define BROWN_TERRACOTTA 59
+#define WITHERED_GRASS 60
+#define MYCELIUM 61
+#define RED_MUSHROOM 62
+#define GOLD_BLOCK 63
 
 extern const int items[];
 extern const int item_count;
