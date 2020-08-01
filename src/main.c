@@ -136,7 +136,7 @@ typedef struct {
     int observe1;
     int observe2;
     int flying;
-    int item_index;
+    int thing_index;
     int scale;
     int ortho;
     float fov;
@@ -1774,7 +1774,7 @@ void render_item(Attrib *attrib) {
     glUniform3f(attrib->camera, 0, 0, 5);
     glUniform1i(attrib->sampler, 0);
     glUniform1f(attrib->timer, time_of_day());
-    int w = items[g->item_index];
+    int w = things[g->thing_index].id;
     if (is_plant(w)) {
         GLuint buffer = gen_plant_buffer(0, 0, 0, 0.5, w);
         draw_plant(attrib, buffer);
@@ -2232,9 +2232,9 @@ void on_right_click() {
     int hw = hit_test(1, s->x, s->y, s->z, s->rx, s->ry, &hx, &hy, &hz);
     if (hy > 0 && hy < 256 && is_obstacle(hw)) {
         if (!player_intersects_block(2, s->x, s->y, s->z, hx, hy, hz)) {
-            set_block(hx, hy, hz, items[g->item_index]);
-            record_block(hx, hy, hz, items[g->item_index]);
-            if (is_light(items[g->item_index])) {
+            set_block(hx, hy, hz, things[g->thing_index].id);
+            record_block(hx, hy, hz, things[g->thing_index].id);
+            if (is_light(things[g->thing_index].id)) {
                 toggle_light(hx, hy, hz);
             }
 
@@ -2248,9 +2248,9 @@ void on_middle_click() {
     State *s = &g->players->state;
     int hx, hy, hz;
     int hw = hit_test(0, s->x, s->y, s->z, s->rx, s->ry, &hx, &hy, &hz);
-    for (int i = 0; i < item_count; i++) {
-        if (items[i] == hw) {
-            g->item_index = i;
+    for (int i = 0; i < thing_count; i++) {
+        if (things[i].id == hw) {
+            g->thing_index = i;
             break;
         }
     }
@@ -2333,18 +2333,21 @@ void on_key(GLFWwindow *window, int key, int scancode, int action, int mods) {
             g->flying = !g->flying;
         }
         if (key >= '1' && key <= '9') {
-            g->item_index = key - '1';
+            g->thing_index = key - '1' + 1;
         }
         if (key == '0') {
-            g->item_index = 9;
+            g->thing_index = 10;
         }
         if (key == CRAFT_KEY_ITEM_NEXT) {
-            g->item_index = (g->item_index + 1) % item_count;
+            g->thing_index++;
+            if (g->thing_index > thing_count) {
+                g->thing_index = 1;
+            }
         }
         if (key == CRAFT_KEY_ITEM_PREV) {
-            g->item_index--;
-            if (g->item_index < 0) {
-                g->item_index = item_count - 1;
+            g->thing_index--;
+            if (g->thing_index <= 0) {
+                g->thing_index = thing_count;
             }
         }
         if (key == CRAFT_KEY_OBSERVE) {
@@ -2393,13 +2396,13 @@ void on_scroll(GLFWwindow *window, double xdelta, double ydelta) {
     static double ypos = 0;
     ypos += ydelta;
     if (ypos < -SCROLL_THRESHOLD) {
-        g->item_index = (g->item_index + 1) % item_count;
+        g->thing_index = (g->thing_index + 1) % thing_count;
         ypos = 0;
     }
     if (ypos > SCROLL_THRESHOLD) {
-        g->item_index--;
-        if (g->item_index < 0) {
-            g->item_index = item_count - 1;
+        g->thing_index--;
+        if (g->thing_index < 0) {
+            g->thing_index = thing_count - 1;
         }
         ypos = 0;
     }
@@ -2655,7 +2658,7 @@ void reset_model() {
     g->observe1 = 0;
     g->observe2 = 0;
     g->flying = 0;
-    g->item_index = 0;
+    g->thing_index = 1;
     memset(g->typing_buffer, 0, sizeof(char) * MAX_TEXT_LENGTH);
     g->typing = 0;
     memset(g->messages, 0, sizeof(char) * MAX_MESSAGES * MAX_TEXT_LENGTH);
@@ -2667,6 +2670,7 @@ void reset_model() {
 
 int main(int argc, char **argv) {
     // INITIALIZATION //
+    item_initialize();
     curl_global_init(CURL_GLOBAL_DEFAULT);
     srand(time(NULL));
     rand();

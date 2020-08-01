@@ -13,6 +13,7 @@
 #define USE_CACHE 1
 #define DAY_LENGTH 600
 #define INVERT_MOUSE 0
+#define MAX_ITEM_COUNT 256
 
 // rendering options
 #define SHOW_LIGHTS 1

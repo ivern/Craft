@@ -1,185 +1,128 @@
 #include "item.h"
 #include "util.h"
 
-const int items[] = {
-    // items the user can build
-    GRASS,
-    SAND,
-    STONE,
-    BRICK,
-    WOOD,
-    STONE,
-    DIRT,
-    PLANK,
-    SNOW,
-    GLASS,
-    COBBLE,
-    LIGHT_STONE,
-    DARK_STONE,
-    CHEST,
-    LEAVES,
-    TALL_GRASS,
-    YELLOW_FLOWER,
-    RED_FLOWER,
-    PURPLE_FLOWER,
-    SUN_FLOWER,
-    WHITE_FLOWER,
-    BLUE_FLOWER,
-    GLOWSTONE,
-    TNT,
-    TORCH,
-    SOUL_TORCH,
-    DIAMOND_ORE,
-    GOLD_ORE,
-    EMERALD_ORE,
-    PRESENT,
-    CRAFTING_TABLE,
-    FLAME_FLOWER,
-    ICE,
-    ICE_WITH_SNOW,
-    COAL_ORE,
-    COAL,
-    OBSIDIAN,
-    LAPIS_LAZULI_ORE,
-    REDSTONE_ORE,
-    IRON_ORE,
-    MAGMA_BLOCK,
-    GRANITE,
-    ANDESITE,
-    DIORITE,
-    WITHERED_MAGMA,
-    MELON,
-    GRAVEL,
-    SNOW_BLOCK,
-    WITHER_ROSE,
-    CACTUS,
-    LIGHT_BROWN_TERRACOTTA,
-    ORANGE_TERRACOTTA,
-    GRAY_TERRACOTTA,
-    LIGHT_GRAY_TERRACOTTA,
-    RED_TERRACOTTA,
-    YELLOW_TERRACOTTA,
-    DEAD_BUSH,
-    BROWN_TERRACOTTA,
-    WITHERED_GRASS,
-    MYCELIUM,
-    RED_MUSHROOM,
-    GOLD_BLOCK
-};
+thing_t things[MAX_ITEM_COUNT];
+int thing_count;
 
-const int item_count = sizeof(items) / sizeof(int);
+void
+simple_block(thing_type_t id, int image)
+{
+    things[id].id = id;
+    things[id].type = BLOCK_THING;
+    things[id].attributes.block.left = image;
+    things[id].attributes.block.right = image;
+    things[id].attributes.block.top = image;
+    things[id].attributes.block.bottom = image;
+    things[id].attributes.block.front = image;
+    things[id].attributes.block.back = image;
 
-const int blocks[256][6] = {
-    // w => (left, right, top, bottom, front, back) tiles
-    {2, 2, 2, 2, 2, 2}, // 0 - empty
-    {16, 16, 32, 0, 16, 16}, // 1 - grass
-    {1, 1, 1, 1, 1, 1}, // 2 - sand
-    {2, 2, 2, 2, 2, 2}, // 3 - stone
-    {3, 3, 3, 3, 3, 3}, // 4 - brick
-    {20, 20, 36, 4, 20, 20}, // 5 - wood
-    {5, 5, 5, 5, 5, 5}, // 6 - stone
-    {6, 6, 6, 6, 6, 6}, // 7 - dirt
-    {7, 7, 7, 7, 7, 7}, // 8 - plank
-    {24, 24, 40, 8, 24, 24}, // 9 - snow
-    {9, 9, 9, 9, 9, 9}, // 10 - glass
-    {10, 10, 10, 10, 10, 10}, // 11 - cobble
-    {11, 11, 11, 11, 11, 11}, // 12 - light stone
-    {12, 12, 12, 12, 12, 12}, // 13 - dark stone
-    {61, 61, 45, 45, 77, 61}, // 14 - chest
-    {14, 14, 14, 14, 14, 14}, // 15 - leaves
-    {15, 15, 15, 15, 15, 15}, // 16 - cloud
-    {0, 0, 0, 0, 0, 0}, // 17
-    {0, 0, 0, 0, 0, 0}, // 18
-    {0, 0, 0, 0, 0, 0}, // 19
-    {0, 0, 0, 0, 0, 0}, // 20
-    {0, 0, 0, 0, 0, 0}, // 21
-    {0, 0, 0, 0, 0, 0}, // 22
-    {0, 0, 0, 0, 0, 0}, // 23
-    {55, 55, 55, 55, 55, 55}, // 24 - glowstone
-    {56, 56, 104, 88, 72, 72}, // 25 - tnt
-    {0, 0, 0, 0, 0, 0}, // 26 - torch
-    {0, 0, 0, 0, 0, 0}, // 27 - soul torch
-    {26, 26, 26, 26, 26, 26}, // 28 - diamond ore
-    {27, 27, 27, 27, 27, 27}, // 29 - gold ore
-    {28, 28, 28, 28, 28, 28}, // 30 - emerald ore
-    {58, 58, 74, 74, 58, 58}, // 31 - present
-    {59, 59, 75, 43, 42, 42}, // 32 - crafting table
-    {0, 0, 0, 0, 0, 0}, // 33 - flame flower
-    {92, 92, 92, 92, 92, 92}, // 34 - ice
-    {60, 60, 76, 44, 60, 60}, // 35 - ice with snow
-    {31, 31, 31, 31, 31, 31}, // 36 - coal ore
-    {63, 63, 63, 63, 63, 63}, // 37 - coal
-    {47, 47, 47, 47, 47, 47}, // 38 - obsidian
-    {29, 29, 29, 29, 29, 29}, // 39 - lapis lazuli ore
-    {30, 30, 30, 30, 30, 30}, // 40 - redstone ore
-    {46, 46, 46, 46, 46, 46}, // 41 - iron ore
-    {62, 62, 62, 62, 62, 62}, // 42 - magma block
-    {78, 78, 78, 78, 78, 78}, // 43 - granite
-    {79, 79, 79, 79, 79, 79}, // 44 - andesite
-    {95, 95, 95, 95, 95, 95}, // 45 - diorite
-    {93, 93, 93, 93, 93, 93}, // 46 - withered magma
-    {94, 94, 110, 126, 94, 94}, // 47 - melon
-    {111, 111, 111, 111, 111, 111}, // 48 - gravel
-    {109, 109, 109, 109, 109, 109}, // 49 - snow block
-    {0, 0, 0, 0, 0, 0}, // 50 - wither rose
-    {127, 127, 143, 142, 127, 127}, // 51 - cactus
-    {91, 91, 91, 91, 91, 91}, // 52 - light brown terracotta
-    {90, 90, 90, 90, 90, 90}, // 53 - orange terracotta
-    {89, 89, 89, 89, 89, 89}, // 54 - gray terracotta
-    {105, 105, 105, 105, 105, 105}, // 55 - light gray terracotta
-    {106, 106, 106, 106, 106, 106}, // 56 - red terracotta
-    {107, 107, 107, 107, 107, 107}, // 57 - yellow terracotta
-    {0, 0, 0, 0, 0, 0}, // 58 - dead bush
-    {108, 108, 108, 108, 108, 108}, // 59 - brown terracotta
-    {87, 87, 103, 71, 87, 87}, // 60 - withered grass
-    {85, 85, 101, 69, 85, 85}, // 61 - mycelium
-    {0, 0, 0, 0, 0, 0}, // 62 - red mushroom
-    {124, 124, 124, 124, 124, 124}, // 63 - gold block
-};
+    ++thing_count;
+}
 
-const int plants[256] = {
-    // w => tile
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0 - 16
-    48, // 17 - tall grass
-    49, // 18 - yellow flower
-    50, // 19 - red flower
-    51, // 20 - purple flower
-    52, // 21 - sun flower
-    53, // 22 - white flower
-    54, // 23 - blue flower
-    0, 0, // 24 - 25
-    57, // 26 - torch
-    73, // 27 - soul torch
-    0, 0, 0, 0, 0, // 28 - 32
-    70, // 33 - flame flower
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 34 - 49
-    125, // 50 - wither rose
-    0, 0, 0, 0, 0, 0, 0, // 51 - 57
-    25, // 58 - dead bush
-    0, 0, 0, // 59 - 61
-    120 //62 - red mushroom
-};
+void
+block(thing_type_t id, int left, int right, int top, int bottom, int front, int back)
+{
+    things[id].id = id;
+    things[id].type = BLOCK_THING;
+    things[id].attributes.block.left = left;
+    things[id].attributes.block.right = right;
+    things[id].attributes.block.top = top;
+    things[id].attributes.block.bottom = bottom;
+    things[id].attributes.block.front = front;
+    things[id].attributes.block.back = back;
+
+    ++thing_count;
+}
+
+void
+plant(thing_type_t id, int image) {
+    things[id].id = id;
+    things[id].type = PLANT_THING;
+    things[id].attributes.plant.image = image;
+
+    ++thing_count;
+}
+
+void
+torch(thing_type_t id, int image) {
+    things[id].id = id;
+    things[id].type = PLANT_THING;
+    things[id].attributes.plant.image = image;
+
+    ++thing_count;
+}
+
+void
+item_initialize(void) {
+    thing_count = 0;
+
+    block(GRASS, 16, 16, 32, 0, 16, 16);
+    simple_block(SAND, 1);
+    simple_block(STONE_BRICKS, 2);
+    simple_block(BRICK, 3);
+    block(WOOD, 20, 20, 36, 4, 20, 20);
+    simple_block(STONE, 5);
+    simple_block(DIRT, 6);
+    simple_block(PLANK, 7);
+    block(SNOW, 24, 24, 40, 8, 24, 24);
+    simple_block(GLASS, 9);
+    simple_block(COBBLE, 10);
+    simple_block(LIGHT_STONE, 11);
+    simple_block(DARK_STONE, 12);
+    block(CHEST, 61, 61, 45, 45, 77, 61);
+    simple_block(LEAVES, 14);
+    simple_block(CLOUD, 15);
+    plant(TALL_GRASS, 48);
+    plant(YELLOW_FLOWER, 49);
+    plant(RED_FLOWER, 50);
+    plant(PURPLE_FLOWER, 51);
+    plant(SUN_FLOWER, 52);
+    plant(WHITE_FLOWER, 53);
+    plant(BLUE_FLOWER, 54);
+    simple_block(GLOWSTONE, 55);
+    block(TNT, 56, 56, 104, 88, 72, 72);
+    torch(TORCH, 57);
+    torch(SOUL_TORCH, 73);
+    simple_block(DIAMOND_ORE, 26);
+    simple_block(GOLD_ORE, 27);
+    simple_block(EMERALD_ORE, 28);
+    block(PRESENT, 58, 58, 74, 74, 58, 58);
+    block(CRAFTING_TABLE, 59, 59, 75, 43, 42, 42);
+    plant(FLAME_FLOWER, 70);
+    simple_block(ICE, 92);
+    block(ICE_WITH_SNOW, 60, 60, 76, 44, 60, 60);
+    simple_block(COAL_ORE, 31);
+    simple_block(COAL, 63);
+    simple_block(OBSIDIAN, 47);
+    simple_block(LAPIS_LAZULI_ORE, 29);
+    simple_block(REDSTONE_ORE, 30);
+    simple_block(IRON_ORE, 46);
+    simple_block(MAGMA_BLOCK, 62);
+    simple_block(GRANITE, 78);
+    simple_block(ANDESITE, 79);
+    simple_block(DIORITE, 95);
+    simple_block(WITHERED_MAGMA, 93);
+    block(MELON, 94, 94, 110, 126, 94, 94);
+    simple_block(GRAVEL, 111);
+    simple_block(SNOW_BLOCK, 109);
+    plant(WITHERED_ROSE, 125);
+    block(CACTUS, 127, 127, 143, 142, 127, 127);
+    simple_block(LIGHT_BROWN_TERRACOTTA, 91);
+    simple_block(ORANGE_TERRACOTTA, 90);
+    simple_block(GRAY_TERRACOTTA, 89);
+    simple_block(LIGHT_GRAY_TERRACOTTA, 105);
+    simple_block(RED_TERRACOTTA, 106);
+    simple_block(YELLOW_TERRACOTTA, 107);
+    plant(DEAD_BUSH, 25);
+    simple_block(BROWN_TERRACOTTA, 108);
+    block(WITHERED_GRASS, 87, 87, 103, 71, 87, 87);
+    block(MYCELIUM, 85, 85, 101, 69, 85, 85);
+    plant(RED_MUSHROOM, 120);
+    simple_block(GOLD_BLOCK, 124);
+}
 
 int is_plant(int w) {
-    switch (w) {
-        case TALL_GRASS:
-        case YELLOW_FLOWER:
-        case RED_FLOWER:
-        case PURPLE_FLOWER:
-        case SUN_FLOWER:
-        case WHITE_FLOWER:
-        case BLUE_FLOWER:
-        case FLAME_FLOWER:
-        case WITHER_ROSE:
-        case DEAD_BUSH:
-        case RED_MUSHROOM:
-        // TODO hacky way to render torches, fix it nicely
-        case TORCH:
-        case SOUL_TORCH:
-            return 1;
-        default:
-            return 0;
-    }
+    return things[w].type == PLANT_THING;
 }
 
 int is_obstacle(int w) {
