@@ -105,7 +105,7 @@ item_initialize(void) {
     block(MELON, 94, 94, 110, 126, 94, 94);
     simple_block(GRAVEL, 111);
     simple_block(SNOW_BLOCK, 109);
-    plant(WITHERED_ROSE, 125);
+    plant(WITHER_ROSE, 125);
     block(CACTUS, 127, 127, 143, 142, 127, 127);
     simple_block(LIGHT_BROWN_TERRACOTTA, 91);
     simple_block(ORANGE_TERRACOTTA, 90);
@@ -118,7 +118,10 @@ item_initialize(void) {
     block(WITHERED_GRASS, 87, 87, 103, 71, 87, 87);
     block(MYCELIUM, 85, 85, 101, 69, 85, 85);
     plant(RED_MUSHROOM, 120);
-    simple_block(GOLD_BLOCK, 124);
+    simple_block(DIAMOND_BLOCK, 124);
+    simple_block(BEDROCK, 123);
+    block(SNOWY_LEAVES, 35, 35, 34, 36, 35, 35);
+    block(BLAST_FURNACE, 122, 122, 137, 137, 121, 122);
 }
 
 int is_plant(int w) {

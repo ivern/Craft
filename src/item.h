@@ -54,7 +54,7 @@ typedef enum {
     MELON = 47,
     GRAVEL = 48,
     SNOW_BLOCK = 49,
-    WITHERED_ROSE = 50,
+    WITHER_ROSE = 50,
     CACTUS = 51,
     LIGHT_BROWN_TERRACOTTA = 52,
     ORANGE_TERRACOTTA = 53,
@@ -67,7 +67,10 @@ typedef enum {
     WITHERED_GRASS = 60,
     MYCELIUM = 61,
     RED_MUSHROOM = 62,
-    GOLD_BLOCK = 63,
+    DIAMOND_BLOCK = 63,
+    BEDROCK = 64,
+    SNOWY_LEAVES = 65,
+    BLAST_FURNACE = 66,
 } thing_type_t;
 
 typedef struct {
@@ -100,8 +103,11 @@ extern int thing_count;
 void item_initialize();
 
 int is_plant(int w);
+
 int is_obstacle(int w);
+
 int is_transparent(int w);
+
 int is_destructable(int w);
 
 /* Indicates whether the specified item is a light source by default. */
