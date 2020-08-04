@@ -17,3 +17,4 @@ log.txt
 *.dll
 *.pyc
 *.cbp
+cache*
