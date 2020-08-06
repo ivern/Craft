@@ -95,6 +95,7 @@ typedef struct {
 typedef struct {
     int id;
     char name[MAX_NAME_LENGTH];
+    int skin;
     State state;
     State state1;
     State state2;
@@ -279,9 +280,9 @@ GLuint gen_plant_buffer(float x, float y, float z, float n, int w) {
     return gen_faces(10, 4, data);
 }
 
-GLuint gen_player_buffer(float x, float y, float z, float rx, float ry) {
+GLuint gen_player_buffer(float x, float y, float z, float rx, float ry, int skin) {
     GLfloat *data = malloc_faces(10, 6);
-    make_player(data, x, y, z, rx, ry);
+    make_player(data, x, y, z, rx, ry, skin);
     return gen_faces(10, 6, data);
 }
 
@@ -440,7 +441,7 @@ void update_player(Player *player,
         State *s = &player->state;
         s->x = x; s->y = y; s->z = z; s->rx = rx; s->ry = ry;
         del_buffer(player->buffer);
-        player->buffer = gen_player_buffer(s->x, s->y, s->z, s->rx, s->ry);
+        player->buffer = gen_player_buffer(s->x, s->y, s->z, s->rx, s->ry, player->skin);
     }
 }
 
@@ -460,6 +461,11 @@ void interpolate_player(Player *player) {
         s1->rx + (s2->rx - s1->rx) * p,
         s1->ry + (s2->ry - s1->ry) * p,
         0);
+}
+
+void redraw_player(Player *player) {
+    State *s = &player->state;
+    update_player(player, s->x, s->y, s->z, s->rx, s->ry, 0);
 }
 
 void delete_player(int id) {
@@ -2559,12 +2565,13 @@ void parse_buffer(char *buffer) {
     char *key;
     char *line = tokenize(buffer, "\n", &key);
     while (line) {
-        int pid;
+        int pid, skin;
         float ux, uy, uz, urx, ury;
-        if (sscanf(line, "U,%d,%f,%f,%f,%f,%f",
-            &pid, &ux, &uy, &uz, &urx, &ury) == 6)
+        if (sscanf(line, "U,%d,%f,%f,%f,%f,%f,%d",
+            &pid, &ux, &uy, &uz, &urx, &ury, &skin) == 7)
         {
             me->id = pid;
+            me->skin = skin;
             s->x = ux; s->y = uy; s->z = uz; s->rx = urx; s->ry = ury;
             force_chunks(me);
             if (uy == 0) {
@@ -2600,6 +2607,14 @@ void parse_buffer(char *buffer) {
             }
             if (player) {
                 update_player(player, px, py, pz, prx, pry, 1);
+            }
+        }
+        if (sscanf(line, "I,%d,%d", &pid, &skin) == 2)
+        {
+            Player *player = find_player(pid);
+            if (player) {
+                player->skin = skin;
+                redraw_player(player);
             }
         }
         if (sscanf(line, "D,%d", &pid) == 1) {
@@ -2911,7 +2926,7 @@ int main(int argc, char **argv) {
             g->observe2 = g->observe2 % g->player_count;
             delete_chunks();
             del_buffer(me->buffer);
-            me->buffer = gen_player_buffer(s->x, s->y, s->z, s->rx, s->ry);
+            me->buffer = gen_player_buffer(s->x, s->y, s->z, s->rx, s->ry, me->skin);
             for (int i = 1; i < g->player_count; i++) {
                 interpolate_player(g->players + i);
             }

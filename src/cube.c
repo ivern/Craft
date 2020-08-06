@@ -159,7 +159,8 @@ void make_plant(
 
 void make_player(
     float *data,
-    float x, float y, float z, float rx, float ry)
+    float x, float y, float z, float rx, float ry,
+    int skin)
 {
     float ao[6][4] = {0};
     float light[6][4] = {
@@ -173,7 +174,7 @@ void make_player(
     make_cube_faces(
         data, ao, light,
         1, 1, 1, 1, 1, 1,
-        238, 236, 253, 221, 237, 239,
+        238 - (4 * skin), 236 - (4 * skin), 253 - (4 * skin), 221 - (4 * skin), 237 - (4 * skin), 239 - (4 * skin),
         0, 0, 0, 0.4);
     float ma[16];
     float mb[16];
