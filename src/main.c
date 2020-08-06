@@ -2609,8 +2609,7 @@ void parse_buffer(char *buffer) {
                 update_player(player, px, py, pz, prx, pry, 1);
             }
         }
-        if (sscanf(line, "I,%d,%d", &pid, &skin) == 2)
-        {
+        if (sscanf(line, "I,%d,%d", &pid, &skin) == 2) {
             Player *player = find_player(pid);
             if (player) {
                 player->skin = skin;
