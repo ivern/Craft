@@ -4,6 +4,9 @@
 #include "matrix.h"
 #include "util.h"
 
+#define SKIN(r, c) \
+    {(c)*4+(r)*48+19,(c)*4+(r)*48+16,(c)*4+(r)*48+33,(c)*4+(r)*48+1,(c)*4+(r)*48+17,(c)*4+(r)*48+18}
+
 void make_cube_faces(
     float *data, float ao[6][4], float light[6][4],
     int left, int right, int top, int bottom, int front, int back,
@@ -173,13 +176,13 @@ void make_player(
     };
 
     int skins[7][6] = {
-            {31, 28, 45, 13, 29, 30}, // ORIGINAL
-            {27, 24, 41, 9,  25, 26}, // NINJA
-            {23, 20, 37, 5,  21, 22}, // GIRL_2
-            {19, 16, 33, 1,  17, 18}, // GIRL_1
-            {43, 40, 57, 25, 41, 42}, // DOCTOR COOMER
-            {39, 36, 53, 21, 37, 38}, // LAVA CREEPER
-            {35, 32, 49, 17, 33, 34}, // CREEPER
+            SKIN(0, 3), // ORIGINAL
+            SKIN(0, 2), // NINJA
+            SKIN(0, 0), // GIRL_1
+            SKIN(0, 1), // GIRL_2
+            SKIN(1, 2), // DOCTOR COOMER
+            SKIN(1, 1), // LAVA CREEPER
+            SKIN(1, 0), // CREEPER
     };
 
     make_cube_faces(
