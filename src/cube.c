@@ -171,10 +171,21 @@ void make_player(
         {0.8, 0.8, 0.8, 0.8},
         {0.8, 0.8, 0.8, 0.8}
     };
+
+    int skins[7][6] = {
+            {31, 28, 45, 13, 29, 30}, // ORIGINAL
+            {27, 24, 41, 9,  25, 26}, // NINJA
+            {23, 20, 37, 5,  21, 22}, // GIRL_2
+            {19, 16, 33, 1,  17, 18}, // GIRL_1
+            {43, 40, 57, 25, 41, 42}, // DOCTOR COOMER
+            {39, 36, 53, 21, 37, 38}, // LAVA CREEPER
+            {35, 32, 49, 17, 33, 34}, // CREEPER
+    };
+
     make_cube_faces(
         data, ao, light,
         1, 1, 1, 1, 1, 1,
-        238 - (4 * skin), 236 - (4 * skin), 253 - (4 * skin), 221 - (4 * skin), 237 - (4 * skin), 239 - (4 * skin),
+        skins[skin][0], skins[skin][1], skins[skin][2], skins[skin][3], skins[skin][4], skins[skin][5],
         0, 0, 0, 0.4);
     float ma[16];
     float mb[16];
