@@ -175,7 +175,7 @@ void make_player(
         {0.8, 0.8, 0.8, 0.8}
     };
 
-    int skins[7][6] = {
+    int skins[][6] = {
             SKIN(0, 3), // ORIGINAL
             SKIN(0, 2), // NINJA
             SKIN(0, 0), // GIRL_1
@@ -183,6 +183,12 @@ void make_player(
             SKIN(1, 2), // DOCTOR COOMER
             SKIN(1, 1), // LAVA CREEPER
             SKIN(1, 0), // CREEPER
+            SKIN(1, 3), // COW
+            SKIN(2, 0), // SHEEP
+            SKIN(2, 1), // CHICKEN
+            SKIN(2, 2), // PIG
+            SKIN(2, 3), // BLAZE
+            SKIN(3, 0), // ZOMBIE
     };
 
     make_cube_faces(
